@@ -2,13 +2,12 @@ import streamlit as st
 import whisper
 import sounddevice as sd
 import wave
-import pyaudio
 import numpy as np
 import os
 import time
 import torch
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-# Remove old import from deepgram and update below in the function
+from deepgram import DeepgramClient, SpeakOptions
 
 # Configuration
 AUDIO_DURATION = 10  # seconds
@@ -104,9 +103,6 @@ def translate_text(text, tokenizer, model):
 def text_to_speech(text, api_key):
     """Convert text to speech using the Deepgram SDK version 3."""
     try:
-        # Import the new classes from the Deepgram SDK version 3
-        from deepgram import DeepgramClient, SpeakOptions
-
         # Instantiate a Deepgram client with the API key
         deepgram = DeepgramClient(api_key)
         options = SpeakOptions(model="aura-asteria-en")
