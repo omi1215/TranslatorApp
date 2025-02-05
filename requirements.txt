@@ -1,0 +1,10 @@
+streamlit==1.41.0
+openai-whisper==20231117
+torch==2.3.0
+torchaudio==2.3.0
+numpy==1.26.4
+sounddevice==0.5.1
+transformers==4.48.2
+sentencepiece==0.2.0
+deepgram-sdk==3.9.0
+protobuf==3.20.3
