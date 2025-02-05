@@ -3,3 +3,5 @@ libasound2-dev
 ffmpeg
 ffmpeg
 libportaudio2
+libgomp1
+libopenblas-dev
