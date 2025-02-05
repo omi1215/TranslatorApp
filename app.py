@@ -30,38 +30,26 @@ def save_audio(audio):
         st.error(f"❌ Audio save failed: {str(e)}")
         return None
 
-@st.cache_resource(max_entries=1, ttl=3600)
+@st.cache_resource(max_entries=1)
 def load_models():
-    """Optimized model loading with progress tracking"""
     try:
-        with st.status("🚀 Initializing AI System...", expanded=True) as status:
-            # Load Whisper first
-            st.write("🔊 Loading Speech Recognition...")
-            whisper_model = whisper.load_model(
-                WHISPER_MODEL,
-                device="cpu",
-                in_memory=False,
-                download_root="./models"
-            )
-            time.sleep(2)  # Allow memory stabilization
-
-            # Load Translation Model
-            st.write("🌍 Loading Translation Engine...")
-            model_name = "facebook/m2m100_418M"
-            tokenizer = AutoTokenizer.from_pretrained(model_name)
-            model = AutoModelForSeq2SeqLM.from_pretrained(
-                model_name,
-                device_map="auto",
-                load_in_8bit=True,
-                low_cpu_mem_usage=True
-            )
-            
-            status.update(label="✅ System Ready!", state="complete")
-            return whisper_model, model, tokenizer
-
+        # First import core components
+        from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+        
+        st.write("🔄 Loading Whisper model...")
+        whisper_model = whisper.load_model(WHISPER_MODEL, device="cpu")
+        
+        st.write("🔄 Loading translation model...")
+        tokenizer = AutoTokenizer.from_pretrained("facebook/m2m100_418M")
+        model = AutoModelForSeq2SeqLM.from_pretrained(
+            "facebook/m2m100_418M",
+            torch_dtype=torch.float16,
+            device_map="auto"
+        )
+        return whisper_model, model, tokenizer
     except Exception as e:
-        st.error(f"❌ System Initialization Failed: {str(e)}")
-        st.stop()
+        st.error(f"❌ Model loading failed: {str(e)}")
+        raise
 
 def transcribe_audio(model, audio_path):
     """Memory-safe transcription"""
@@ -124,6 +112,11 @@ def cleanup_files(*filenames):
             pass  # Silent cleanup
 
 def main():
+        # Version verification
+    import transformers
+    if transformers.__version__ != "4.40.1":
+        st.error(f"❌ Wrong transformers version: {transformers.__version__} (Required: 4.40.1)")
+        st.stop()
     st.title("🎙️ Smart Audio Translator")
     st.markdown("""
     <style>
