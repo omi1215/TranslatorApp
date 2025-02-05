@@ -2,6 +2,7 @@ import streamlit as st
 import whisper
 import sounddevice as sd
 import wave
+import pyaudio
 import numpy as np
 import os
 import time
