@@ -6,6 +6,10 @@ import torch
 from audiorecorder import audiorecorder
 from deepgram import DeepgramClient, SpeakOptions
 from googletrans import Translator
+from dotenv import load_dotenv
+
+# Load environment variables from .env file (for local development)
+load_dotenv()
 
 # Configuration
 WHISPER_MODEL = "small"  # Using a small model for faster performance
@@ -85,7 +89,11 @@ def main():
     except:
         st.stop()
     
-    deepgram_key = st.text_input("Enter Deepgram API Key:", type="password")
+    # Load Deepgram API key from environment variable
+    deepgram_key = os.getenv("DEEPGRAM_API_KEY")
+    if not deepgram_key:
+        st.error("Deepgram API key is not set in the environment!")
+        st.stop()
     
     # Audio recorder component
     audio = audiorecorder("⏺️ Start Recording", "⏹️ Stop Recording")
@@ -102,8 +110,9 @@ def main():
                 return
 
             translated_text = translate_text_google(original_text, translator)
+            
 
-            if deepgram_key and translated_text:
+            if translated_text:
                 audio_output = text_to_speech(translated_text, deepgram_key)
                 if audio_output:
                     st.audio(audio_output)
